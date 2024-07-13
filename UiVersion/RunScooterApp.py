@@ -6,9 +6,11 @@ import tkinter as tk
 import ScooterRentalAppUi
 
 ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("dark-blue")
 
 app = ScooterRentalAppUi.ScooterRentalApp()
+
+# Mit welchem Scooter wird aktuell gearbeitet (1-10)? Default = 1
+selectedScooter = 1
 
 root = ctk.CTk()
 root.title("ScooTeq App")
@@ -22,17 +24,11 @@ def getUhrzeit():
     seconds = int(now.strftime("%S"))
 
     return [hours, minutes, seconds]
-  
-# Windows
-frontPage = None
-scooterFahrtUebersicht = None
-scooterReservierungsUebersicht = None
-
-selectedScooter = 1
 
 root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
 
+# Update Funktionen
 def update_drivePice(updatingLabel):
     currentScooter = app.getScooterById(selectedScooter)
 
@@ -46,10 +42,7 @@ def update_drivePice(updatingLabel):
         timeInMinutes += 1
 
     currentPrice = app.getDrivePrice(timeInMinutes)
-    #currentScooter.updatePreis(currentPrice)
     currentScooter.setAktuellerPreis(currentPrice)
-    #print(currentScooter.getAktuellerPreis())
-    #print(currentScooter.getInsgesamterPreis())
 
     updatingLabel.configure(text=f"Aktueller Preis: {currentPrice}€")
     updatingLabel.after(1000, update_drivePice, updatingLabel)
@@ -87,7 +80,6 @@ def update_reservePrice(updatingLabel):
     currentScooter = app.getScooterById(selectedScooter)
 
     timeDifference = app.getTimeDifferance(getUhrzeit(), currentScooter.getReservierungsZeitpunkt())
-    hours = timeDifference[0]
     minutes = timeDifference[1]
     seconds = getUhrzeit()[2]
 
@@ -96,10 +88,7 @@ def update_reservePrice(updatingLabel):
         timeInMinutes += 1
 
     currentPrice = app.getReservePrice(timeInMinutes)
-    #currentScooter.updatePreis(currentPrice)
     currentScooter.setAktuellerPreis(currentPrice)
-    #print(currentScooter.getAktuellerPreis())
-    #print(currentScooter.getInsgesamterPreis())
 
     updatingLabel.configure(text=f"Preis der Reservierung: {currentPrice}€")
     updatingLabel.after(1000, update_reservePrice, updatingLabel)
@@ -127,6 +116,7 @@ def scooterAusleihenUi(id):
     if scooter.getScooterAusgeliehen():
         show_frame(scooterFahrtUebersicht)
         return
+    
     app.scooterAusleihen(id)
     show_frame(scooterFahrtUebersicht)
 
@@ -134,14 +124,9 @@ def scooterZurueckgebenUi(id):
     global selectedScooter
     selectedScooter = id
     
-    scooter = app.getScooterById(id)
-
-    # TODO Preis ordentlich machena
-
     app.scooterZurueckgeben(id)
     update_frames()
     show_frame(scooterFahrtUebersichtRueckgabe)
-
 
 def scooterReservierenUi(id):
     global selectedScooter
@@ -158,8 +143,19 @@ def scooterReservierenUi(id):
 def scooterReservierenBeendenUi(id):
     app.scooterReservierenBeenden(id)
     show_frame(frontPage)
-   
 
+def changeTheme():
+    currentTheme = ctk.get_appearance_mode()
+
+    if currentTheme == "Dark":
+        ctk.set_appearance_mode("light")
+    else:
+        ctk.set_appearance_mode("dark")
+
+    update_frames()
+    show_frame(frontPage)
+
+# Frames erstellen
 def create_frontPage():
     global frontPage
     frontPage = ctk.CTkFrame(master=root)
@@ -189,6 +185,9 @@ def create_frontPage():
 
     reservieren_button = ctk.CTkButton(down_frame, text="Scooter reservieren", command = lambda: show_frame(avalibleScooterReservieren))
     reservieren_button.grid(row=1, column=1, pady=12, padx=18)
+
+    theme_button = ctk.CTkButton(down_frame, text="Change Theme", command = lambda: changeTheme())
+    theme_button.grid(row=2, column=1, pady=12, padx=18)
 
     beenden_button  = ctk.CTkButton(down_frame, text="App beenden", command=root.destroy)
     beenden_button.grid(row=3, column=1, pady=12, padx=18)
@@ -392,6 +391,7 @@ def create_avalibleScooter():
     switch_button2 = ctk.CTkButton(back_button_frame, text="Zurück", command=lambda: show_frame(frontPage))
     switch_button2.pack(pady=10)
 
+# Framemanagement
 def show_frame(frame):
     update_frames()
 
@@ -413,6 +413,8 @@ def runApp():
     root.mainloop()
 
 runApp()
+
+# TODO Was wen Scooter reserviert ist und man ihn dann manuell auslieht? Soll man dass könen? Custom Nachricht (Messagebox)?
 
 # TODO Klassen aufraeumen
 

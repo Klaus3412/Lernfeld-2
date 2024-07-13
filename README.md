@@ -12,6 +12,17 @@ Darüber hinaus können Scooter auch im Voraus schon reserviert werden und Kunde
 
 Als Kunde von **ScooTeq** haben sie also keinen Grund sich die App nicht sofort herunterzuladen.
 
+### Bilder der Anwendung
+
+**So sieht die Startseite unserer Anwendung aus:**
+![Startseite](startSeite.png)
+
+**Bei uns kannst du mehrere Scooter gleichzeitig ausleihen oder reservieren:**
+![Scooteruebersicht](scooterUebersicht.png)
+
+**Auch für Menschen den "light-mode" bevorzugen kommen bei uns auf ihre kosten:**
+![lightMode](lightTheme.png)
+
 
 ### Development Requirements
 
